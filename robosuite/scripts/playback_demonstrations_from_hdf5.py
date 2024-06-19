@@ -74,6 +74,10 @@ if __name__ == "__main__":
         # load the flattened mujoco states
         states = f["data/{}/states".format(ep)][()]
 
+        # Print the states
+        #print(f"States for episode {ep}:")
+        #print(states)
+        #print(env.sim.get_state().flatten())
         if args.use_actions:
 
             # load the initial state
@@ -82,9 +86,14 @@ if __name__ == "__main__":
 
             # load the actions and play them back open-loop
             actions = np.array(f["data/{}/actions".format(ep)][()])
+
+            #print(f"Actions for episode {ep}:")
+            #print(actions)
+
             num_actions = actions.shape[0]
 
             for j, action in enumerate(actions):
+                print(action)
                 env.step(action)
                 env.render()
 

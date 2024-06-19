@@ -142,7 +142,7 @@ class Grasp(SingleArmEnv):
         initialization_noise="default",
         table_full_size=(0.8, 0.8, 0.05),
         table_friction=(1.0, 5e-3, 1e-4),
-        use_camera_obs=True,
+        use_camera_obs=False,
         use_object_obs=True,
         reward_scale=1.0,
         reward_shaping=False,
@@ -294,8 +294,8 @@ class Grasp(SingleArmEnv):
         )
         self.cube = BoxObject(
             name="cube",
-            size_min=[0.020, 0.020, 0.020],  # [0.015, 0.015, 0.015],
-            size_max=[0.022, 0.022, 0.022],  # [0.018, 0.018, 0.018])
+            size_min=[0.020, 0.020, 0.020], #size_min=[0.020, 0.020, 0.020],  # [0.015, 0.015, 0.015],
+            size_max=[0.020, 0.020, 0.020], #size_max=[0.022, 0.022, 0.022],  # [0.018, 0.018, 0.018])
             rgba=[1, 0, 0, 1],
             material=redwood,
         )
@@ -308,9 +308,9 @@ class Grasp(SingleArmEnv):
             self.placement_initializer = UniformRandomSampler(
                 name="ObjectSampler",
                 mujoco_objects=self.cube,
-                x_range=[-0.03, 0.03],
-                y_range=[-0.03, 0.03],
-                rotation=None,
+                x_range = (0, 0), #x_range=[-0.03, 0.03],
+                y_range = (0, 0), #y_range=[-0.03, 0.03],
+                rotation=0, #rotation=None,
                 ensure_object_boundary_in_range=False,
                 ensure_valid_placement=True,
                 reference_pos=self.table_offset,
@@ -372,6 +372,7 @@ class Grasp(SingleArmEnv):
 
             # Create observables
             for name, s in zip(names, sensors):
+                #print(name)
                 observables[name] = Observable(
                     name=name,
                     sensor=s,
@@ -420,3 +421,13 @@ class Grasp(SingleArmEnv):
             bool: True if cube has been grasped
         """ 
         return self._check_grasp(gripper=self.robots[0].gripper, object_geoms=self.cube)
+
+# Create an instance of the Grasp environment
+#env = Grasp(robots="Panda", use_object_obs=True, has_renderer=False)
+
+# Call _setup_observables to retrieve the observables
+#observables = env._setup_observables()
+
+# Print the observables
+#for name, observable in observables.items():
+#    print(f"Observable Name: {name}")
