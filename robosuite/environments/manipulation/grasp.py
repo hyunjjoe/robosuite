@@ -367,7 +367,7 @@ class Grasp(SingleArmEnv):
                     else np.zeros(3)
                 )
 
-            sensors = [cube_pos, cube_quat, gripper_to_cube_pos]
+            sensors = [cube_pos, cube_quat] #, gripper_to_cube_pos] #[cube_pos, cube_quat, gripper_to_cube_pos]
             names = [s.__name__ for s in sensors]
 
             # Create observables
