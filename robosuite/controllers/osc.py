@@ -264,7 +264,6 @@ class OperationalSpaceController(Controller):
         self.goal_pos = set_goal_position(
             scaled_delta[:3], self.ee_pos, position_limit=self.position_limits, set_pos=set_pos
         )
-
         if self.interpolator_pos is not None:
             self.interpolator_pos.set_goal(self.goal_pos)
 
