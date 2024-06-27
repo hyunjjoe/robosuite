@@ -139,7 +139,7 @@ class Reach(SingleArmEnv):
         env_configuration="default",
         controller_configs=None,
         gripper_types="default",
-        #initialization_noise="default"
+        #initialization_noise=None,
         initialization_noise = {"magnitude": 0.1, "type": "uniform"},
         table_full_size=(0.8, 0.8, 0.05),
         table_friction=(1.0, 5e-3, 1e-4),
@@ -303,8 +303,10 @@ class Reach(SingleArmEnv):
             self.placement_initializer = UniformRandomSampler(
                 name="ObjectSampler",
                 mujoco_objects=self.cube,
-                x_range = (0, 0), #x_range=[-0.03, 0.03],
-                y_range = (0, 0), #y_range=[-0.03, 0.03],
+                #x_range = (0, 0),
+                #y_range = (0, 0),
+                x_range = (-0.2, 0.2),
+                y_range = (-0.2, 0.2),
                 rotation=0, #rotation=None,
                 ensure_object_boundary_in_range=False,
                 ensure_valid_placement=True,
