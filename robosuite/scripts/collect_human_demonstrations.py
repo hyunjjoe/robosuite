@@ -60,9 +60,25 @@ def collect_human_trajectory(env, device, arm, env_configuration):
             break
 
         # Run environment step
-        env.step(action)
+        obs, _, _, _ = env.step(action)
         env.render()
-
+        
+        #Failure set
+        #EEF to Object
+        dists = [
+            env._gripper_to_target(
+                gripper=env.robots[0].gripper,
+                target=contact_geom,
+                target_type="geom",
+                return_distance=True,
+            )
+            for contact_geom in env.bowl.contact_geoms
+        ]
+        g1 = np.min(dists) - 0.02
+        #Gripper State
+        g2 = -1*(obs['robot0_gripper_qpos'][0])+0.003
+        g = min(g1,g2)
+        
         # Also break if we complete the task
         if task_completion_hold_count == 0:
             break

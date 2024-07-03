@@ -359,7 +359,6 @@ class MujocoXMLObject(MujocoObject, MujocoXML):
         obj.attrib["name"] = "main"
         # Get all geom_pairs in this tree
         geom_pairs = self._get_geoms(obj)
-
         # Define a temp function so we don't duplicate so much code
         obj_type = self.obj_type
 
@@ -390,7 +389,6 @@ class MujocoXMLObject(MujocoObject, MujocoXML):
         template["rgba"] = "1 0 0 0"
         template["name"] = "default_site"
         obj.append(ET.Element("site", attrib=template))
-
         return obj
 
     def exclude_from_prefixing(self, inp):

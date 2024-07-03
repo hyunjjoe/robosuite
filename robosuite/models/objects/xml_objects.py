@@ -18,6 +18,15 @@ class BottleObject(MujocoXMLObject):
             duplicate_collision_geoms=True,
         )
 
+class BowlObject(MujocoXMLObject):
+    def __init__(self, name):
+        super().__init__(
+            xml_path_completion("objects/Bradshaw_International_11642_7_Qt_MP_Plastic_Bowl/bowl.xml"),
+            name=name,
+            joints=[dict(type="free", damping="0.0005")],
+            obj_type="all",
+            duplicate_collision_geoms=True,
+        )
 
 class CanObject(MujocoXMLObject):
     """
