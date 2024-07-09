@@ -181,8 +181,8 @@ class PickPlace(SingleArmEnv):
         use_object_obs=True,
         reward_scale=1.0,
         reward_shaping=False,
-        single_object_mode=2,
-        object_type="cereal",
+        single_object_mode=1,
+        object_type=None,
         has_renderer=False,
         has_offscreen_renderer=True,
         render_camera="frontview",
@@ -569,7 +569,7 @@ class PickPlace(SingleArmEnv):
             bin_x_low += self.bin_size[0] / 4.0
             bin_y_low += self.bin_size[1] / 4.0
             self.target_bin_placements[i, :] = [bin_x_low, bin_y_low, self.bin2_pos[2]]
-            print(self.target_bin_placements[i, :])
+            #print(self.target_bin_placements[i, :])
 
     def _setup_observables(self):
         """

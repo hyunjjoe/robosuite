@@ -21,12 +21,52 @@ class BottleObject(MujocoXMLObject):
 class BowlObject(MujocoXMLObject):
     def __init__(self, name):
         super().__init__(
-            xml_path_completion("objects/Bradshaw_International_11642_7_Qt_MP_Plastic_Bowl/bowl.xml"),
+            xml_path_completion("objects/Bradshaw_International_11642_7_Qt_MP_Plastic_Bowl/model.xml"),
             name=name,
             joints=[dict(type="free", damping="0.0005")],
             obj_type="all",
             duplicate_collision_geoms=True,
         )
+
+class EcoformsCupObject(MujocoXMLObject):
+    def __init__(self, name):
+        super().__init__(
+            xml_path_completion("objects/Ecoforms_Cup_B4_SAN/model.xml"),
+            name=name,
+            joints=[dict(type="free", damping="0.0005")],
+            obj_type="all",
+            duplicate_collision_geoms=True,
+        )
+
+class ACEMugObject(MujocoXMLObject):
+    def __init__(self, name):
+        super().__init__(
+            xml_path_completion("objects/ACE_Coffee_Mug_Kristen_16_oz_cup/model.xml"),
+            name=name,
+            joints=[dict(type="free", damping="0.0005")],
+            obj_type="all",
+            duplicate_collision_geoms=True,
+        )
+
+class ThresholdMugObject(MujocoXMLObject):
+    def __init__(self, name):
+        super().__init__(
+            xml_path_completion("objects/Threshold_Porcelain_Coffee_Mug_All_Over_Bead_White/model.xml"),
+            name=name,
+            joints=[dict(type="free", damping="0.0005")],
+            obj_type="all",
+            duplicate_collision_geoms=True,
+        )    
+
+class ThresholdPitcherObject(MujocoXMLObject):
+    def __init__(self, name):
+        super().__init__(
+            xml_path_completion("objects/Threshold_Porcelain_Pitcher_White/model.xml"),
+            name=name,
+            joints=[dict(type="free", damping="0.0005")],
+            obj_type="all",
+            duplicate_collision_geoms=True,
+        ) 
 
 class CanObject(MujocoXMLObject):
     """

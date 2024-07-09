@@ -3,6 +3,10 @@ from .generated_objects import CompositeBodyObject, CompositeObject, PrimitiveOb
 from .object_groups import ObjectGroup
 
 from .xml_objects import (
+    EcoformsCupObject,
+    ACEMugObject,
+    ThresholdMugObject,
+    ThresholdPitcherObject,
     BottleObject,
     BowlObject,
     CanObject,
