@@ -39,7 +39,7 @@
   <worldbody>
     <body>
       <body name="object">
-        <inertial pos="0 0 0" mass="0.5" diaginertia="0.01 0.01 0.01" />
+        <!--inertial pos="0 0 0" mass="0.1" diaginertia="0.1 0.1 0.1" /-->
         <!-- Visual mesh -->
         <geom pos="0 0 0" mesh="model" type="mesh" solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" material="material_0" contype="0" conaffinity="0" group="1"/>
         <!-- Collision meshes with different settings to avoid visual issues -->
@@ -76,9 +76,9 @@
         <geom pos="0 0 0" mesh="model_collision_30" type="mesh" solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" material="material_0" group="0" rgba="0 0 0 0"/>
         <geom pos="0 0 0" mesh="model_collision_31" type="mesh" solimp="0.998 0.998 0.001" solref="0.001 1" density="100" friction="0.95 0.3 0.1" material="material_0" group="0" rgba="0 0 0 0"/>
       </body>
-      <site rgba="0 0 0 0" size="0.005" pos="0 0 -0.041" name="bottom_site"/>
-      <site rgba="0 0 0 0" size="0.005" pos="0 0 0.0375" name="top_site"/>
-      <site rgba="0 0 0 0" size="0.005" pos="0.0127 0.0127 0" name="horizontal_radius_site"/>
+      <site rgba="0 0 0 0" size="0.005" pos="0 0 0" name="bottom_site"/>
+      <site rgba="0 0 0 0" size="0.005" pos="0 0 0.139" name="top_site"/>
+      <site rgba="0 0 0 0" size="0.005" pos="0 0 0" name="horizontal_radius_site"/>
     </body>
   </worldbody>
 </mujoco>

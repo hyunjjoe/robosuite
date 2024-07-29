@@ -363,7 +363,6 @@ class RobotEnv(MujocoEnv):
                     sensor=s,
                     sampling_rate=self.control_freq,
                 )
-
         return observables
 
     def _create_camera_sensors(self, cam_name, cam_w, cam_h, cam_d, cam_segs, modality="image"):

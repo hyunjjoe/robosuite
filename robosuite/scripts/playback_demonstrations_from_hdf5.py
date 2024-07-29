@@ -93,7 +93,7 @@ if __name__ == "__main__":
             num_actions = actions.shape[0]
 
             for j, action in enumerate(actions):
-                print(action)
+                #print(action)
                 env.step(action)
                 env.render()
 

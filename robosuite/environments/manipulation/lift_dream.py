@@ -139,7 +139,7 @@ class LiftDream(SingleArmEnv):
         env_configuration="default",
         controller_configs=None,
         gripper_types="default",
-        initialization_noise="default",
+        initialization_noise="default", #"default",
         table_full_size=(0.8, 0.8, 0.05),
         table_friction=(1.0, 5e-3, 1e-4),
         use_camera_obs=False,
@@ -181,10 +181,15 @@ class LiftDream(SingleArmEnv):
         self.placement_initializer = placement_initializer
 
         # task settings
-        #self.object_id = [0, 1, 2, 3, 4] #ACE, bowl, ecoforms, mug, pitcher
+        #self.object_id = [0, 1, 2, 3, 4] #Bowl, Ecoforms, ACE, Pitcher, Mug
         #determine which object needs to be picked up
-        self.obj_names = ["ACE", "Bowl", "Ecoforms", "Mug", "Pitcher"]
- 
+        self.demo_sampling = False
+        self.target_object = "Ecoforms"
+        self.object_to_id = {"Bowl": 0, "Ecoforms": 1, "ACE": 2} #, "Pitcher": 3}
+        if self.demo_sampling:
+            self.obj_names = self.target_object
+        else:
+            self.obj_names = ["Bowl", "Ecoforms", "ACE"] #, "Pitcher"] #, "Mug"]          
         super().__init__(
             robots=robots,
             env_configuration=env_configuration,
@@ -254,8 +259,12 @@ class LiftDream(SingleArmEnv):
             reward += reaching_reward
 
             # grasping reward
-            if self._check_grasp(gripper=self.robots[0].gripper, object_geoms=self.objects[self.object_id]):
-                reward += 0.25
+            if self.demo_sampling:
+                if self._check_grasp(gripper=self.robots[0].gripper, object_geoms=self.objects[0]):
+                    reward += 0.25                
+            else:
+                if self._check_grasp(gripper=self.robots[0].gripper, object_geoms=self.objects[self.object_id]):
+                    reward += 0.25
 
         # Scale reward if requested
         if self.reward_scale is not None:
@@ -285,14 +294,27 @@ class LiftDream(SingleArmEnv):
 
         # initialize objects of interest
         self.objects = []
-        for obj_cls, obj_name in zip(
-                (ACEMugObject, BowlObject, EcoformsCupObject, ThresholdMugObject, ThresholdPitcherObject),
-                self.obj_names,
-        ):
-            obj = obj_cls(name=obj_name)
-            self.objects.append(obj)
 
-        # task includes arena, robot, and objects of interest
+        if self.demo_sampling:
+            object_mapping = {
+                "Bowl": BowlObject,
+                "Ecoforms": EcoformsCupObject,
+                "ACE": ACEMugObject #,
+                #"Pitcher": ThresholdPitcherObject
+            }
+            
+            if self.target_object in object_mapping:
+                obj = object_mapping[self.target_object](name=self.target_object)
+                self.objects.append(obj)
+        else:
+            for obj_cls, obj_name in zip(
+                    (BowlObject, EcoformsCupObject, ACEMugObject), #, ThresholdPitcherObject), #ThresholdMugObject,
+                    self.obj_names,
+            ):
+                obj = obj_cls(name=obj_name)
+                self.objects.append(obj)
+
+        #task includes arena, robot, and objects of interest
         self.model = ManipulationTask(
             mujoco_arena=mujoco_arena,
             mujoco_robots=[robot.robot_model for robot in self.robots],
@@ -302,41 +324,50 @@ class LiftDream(SingleArmEnv):
         # Create placement initializer
         self.placement_initializer = SequentialCompositeSampler(name="ObjectSampler")
         self.y_range = [
-            [-0.30,-0.30],
-            [-0.15, -0.15],
-            [0, 0],
-            [0.15, 0.15],
-            [0.30, 0.30]
+            [-0.10,-0.10],
+            [0.10, 0.10],
+            [0.04, 0.04] #,
+            #[-0.10, -0.10]
         ]
-        # self.placement_initializer.append_sampler(sampler=
-        #     UniformRandomSampler(
-        #     name="CollisionObjectSampler",
-        #     mujoco_objects=self.objects,
-        #     x_range=[-0.35, 0.35],
-        #     y_range=[-0.35,0.35],
-        #     rotation=None,
-        #     ensure_object_boundary_in_range=True,
-        #     ensure_valid_placement=True,
-        #     reference_pos=self.table_offset,
-        #     z_offset=0.01,
-        #     )
-        # )
-        i = 0
-        for obj in self.objects:
+        self.x_range = [
+            [-0.10,-0.10],
+            [-0.10, -0.10],
+            [0.10, 0.10] #,
+            #[0.10, 0.10]
+        ]
+        #ENV SAMPLER
+        if self.demo_sampling:
             self.placement_initializer.append_sampler(sampler=
                 UniformRandomSampler(
-                name=f"{obj.name}ObjectSampler",
-                mujoco_objects=obj,
-                x_range=[0, 0],
-                y_range=self.y_range[i],
-                rotation=None,
-                ensure_object_boundary_in_range=True,
+                name="CollisionObjectSampler",
+                mujoco_objects=self.objects,
+                x_range=[0.10, 0.10],
+                y_range=[0.04, 0.04],
+                rotation=180,
+                ensure_object_boundary_in_range=False,
                 ensure_valid_placement=True,
                 reference_pos=self.table_offset,
-                z_offset=0.01,
+                z_offset=0.001,
                 )
             )
-            i += 1
+        else:
+            i = 0
+            for obj in self.objects:
+                self.placement_initializer.append_sampler(sampler=
+                    UniformRandomSampler(
+                    name=f"{obj.name}ObjectSampler",
+                    mujoco_objects=obj,
+                    x_range=self.x_range[i],
+                    y_range=self.y_range[i],
+                    rotation=180,
+                    ensure_object_boundary_in_range=True,
+                    ensure_valid_placement=True,
+                    reference_pos=self.table_offset,
+                    z_offset=0.001,
+                    )
+                )
+                i += 1
+
 
     def _setup_references(self):
         """
@@ -347,7 +378,10 @@ class LiftDream(SingleArmEnv):
         super()._setup_references()
 
         # Additional object references from this env
-        self.object_body_id = self.sim.model.body_name2id(self.objects[self.object_id].root_body)
+        if self.demo_sampling:
+            self.object_body_id = self.sim.model.body_name2id(self.objects[0].root_body)
+        else:
+            self.object_body_id = self.sim.model.body_name2id(self.objects[self.object_id].root_body)
 
     def _setup_observables(self):
         """
@@ -372,24 +406,22 @@ class LiftDream(SingleArmEnv):
             @sensor(modality=modality)
             def object_quat(obs_cache):
                 return convert_quat(np.array(self.sim.data.body_xquat[self.object_body_id]), to="xyzw")
-
+            
             @sensor(modality=modality)
             def gripper_to_object_pos(obs_cache):
-                dists = [
-                    self._gripper_to_target(
-                    gripper=self.robots[0].gripper,
-                    target=contact_geom,
-                    target_type="geom",
-                    return_distance=True,
+                return (
+                    obs_cache[f"{pf}eef_pos"] - obs_cache["object_pos"]
+                    if f"{pf}eef_pos" in obs_cache and "object_pos" in obs_cache
+                    else np.zeros(3)
                 )
-                    for contact_geom in self.objects[self.object_id].contact_geoms]
-                return np.min(dists) - 0.02 #0.02 is heuristical
             
             @sensor(modality=modality)
             def obj_id(obs_cache):
+                #return np.eye(5)[self.object_id]
                 return self.object_id
             
             sensors = [object_pos, object_quat, gripper_to_object_pos, obj_id]
+            #sensors = [object_pos, object_quat, obj_id]
             names = [s.__name__ for s in sensors]
 
             # Create observables
@@ -399,14 +431,16 @@ class LiftDream(SingleArmEnv):
                     sensor=s,
                     sampling_rate=self.control_freq,
                 )
-            
         return observables
-
+     
     def _reset_internal(self):
         """
         Resets simulation internal configurations.
         """
-        self.object_id = random.randint(0, 4)
+        if self.demo_sampling:
+            self.object_id = self.object_to_id[self.target_object]
+        else:
+            self.object_id = random.choice([0,1,2])
         super()._reset_internal()
 
         # Reset all object positions using initializer sampler if we're not directly loading from an xml
@@ -431,7 +465,10 @@ class LiftDream(SingleArmEnv):
 
         # Color the gripper visualization site according to its distance to the object
         if vis_settings["grippers"]:
-            self._visualize_gripper_to_target(gripper=self.robots[0].gripper, target=self.objects[self.object_id])
+            if self.demo_sampling:
+                self._visualize_gripper_to_target(gripper=self.robots[0].gripper, target=self.objects[0])
+            else:
+                self._visualize_gripper_to_target(gripper=self.robots[0].gripper, target=self.objects[self.object_id])
 
     def _check_success(self):
         """
@@ -444,4 +481,4 @@ class LiftDream(SingleArmEnv):
         table_height = self.model.mujoco_arena.table_offset[2]
 
         # object is higher than the table top above a margin
-        return object_height > table_height + 0.06
+        return object_height > table_height + 0.07

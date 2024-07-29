@@ -14,6 +14,7 @@ from glob import glob
 
 import h5py
 import numpy as np
+import matplotlib.pyplot as plt
 
 import robosuite as suite
 import robosuite.macros as macros
@@ -41,10 +42,10 @@ def collect_human_trajectory(env, device, arm, env_configuration):
     env.render()
 
     is_first = True
-
+    gripper_to_object_pos_list = []
     task_completion_hold_count = -1  # counter to collect 10 timesteps after reaching goal
     device.start_control()
-
+    first = 0
     # Loop until we get a reset from the input or the task completes
     while True:
         # Set active robot
@@ -54,7 +55,6 @@ def collect_human_trajectory(env, device, arm, env_configuration):
         action, grasp = input2action(
             device=device, robot=active_robot, active_arm=arm, env_configuration=env_configuration
         )
-
         # If action is none, then this a reset so we should break
         if action is None:
             break
@@ -65,21 +65,19 @@ def collect_human_trajectory(env, device, arm, env_configuration):
         
         #Failure set
         #EEF to Object
-        #dists = [
-        #    env._gripper_to_target(
-        #        gripper=env.robots[0].gripper,
-        #       target=contact_geom,
-        #        target_type="geom",
-        #        return_distance=True,
-        #    )
-        #    for contact_geom in env.object.contact_geoms
-        #]
-        #g1 = np.min(dists) - 0.02
         #Gripper State
-        #g2 = -1*(obs['robot0_gripper_qpos'][0])+0.003
-        print(obs)
-        #g = min(g1,g2)
-        
+        g2 = -1*(obs['robot0_gripper_qpos'][0])+0.003
+        #gripper_to_object_pos_list.append(obs["robot0_eef_pos"][2])
+        #print(obs["gripper_to_object_pos"])
+        g1 = np.sqrt(obs["object-state"][7]**2 + obs["object-state"][8]**2 + obs["object-state"][9]**2) - 0.14
+        #print(obs["robot0_eef_pos"])
+        g = min(g1,g2)
+        print(g)
+        #print('robot')
+        #print(obs["object-state"][8])
+        if first==0:
+            print(obs["object-state"])
+            first = 1
         # Also break if we complete the task
         if task_completion_hold_count == 0:
             break
@@ -93,6 +91,12 @@ def collect_human_trajectory(env, device, arm, env_configuration):
         else:
             task_completion_hold_count = -1  # null the counter if there's no success
 
+    # Plot the gripper_to_object_pos data
+    # plt.plot(gripper_to_object_pos_list)
+    # plt.xlabel("Time step")
+    # plt.ylabel("Gripper to Object Position")
+    # plt.title("Gripper to Object Position Over Time")
+    # plt.savefig('gripper_to_object_pos_plot.png')
     # cleanup for end of data collection episodes
     env.close()
 
@@ -264,7 +268,10 @@ if __name__ == "__main__":
     new_dir = os.path.join(args.directory, "{}_{}".format(t1, t2))
     os.makedirs(new_dir)
 
+    demo_counter = 0
     # collect demonstrations
     while True:
         collect_human_trajectory(env, device, args.arm, args.config)
         gather_demonstrations_as_hdf5(tmp_directory, new_dir, env_info)
+        demo_counter += 1
+        print(f"Number of demonstrations collected: {demo_counter}")
