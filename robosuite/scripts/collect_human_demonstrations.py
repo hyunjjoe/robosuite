@@ -42,7 +42,7 @@ def collect_human_trajectory(env, device, arm, env_configuration):
     env.render()
 
     is_first = True
-    gripper_to_object_pos_list = []
+    ic_list = []
     task_completion_hold_count = -1  # counter to collect 10 timesteps after reaching goal
     device.start_control()
     first = 0
@@ -69,13 +69,14 @@ def collect_human_trajectory(env, device, arm, env_configuration):
         g2 = -1*(obs['robot0_gripper_qpos'][0])+0.003
         #gripper_to_object_pos_list.append(obs["robot0_eef_pos"][2])
         #print(obs["gripper_to_object_pos"])
-        g1 = np.sqrt(obs["object-state"][7]**2 + obs["object-state"][8]**2 + obs["object-state"][9]**2) - 0.14
+        g1 = np.sqrt(obs["object-state"][7]**2 + obs["object-state"][8]**2 + obs["object-state"][9]**2) - 0.12
         #print(obs["robot0_eef_pos"])
         g = min(g1,g2)
         print(g)
         #print('robot')
-        #print(obs["object-state"][8])
+        print(obs["object-state"][-1])
         if first==0:
+            ic_list.append(obs['robot0_eef_pos'])
             print(obs["object-state"])
             first = 1
         # Also break if we complete the task

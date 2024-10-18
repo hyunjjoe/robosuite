@@ -441,6 +441,7 @@ class LiftDream(SingleArmEnv):
             self.object_id = self.object_to_id[self.target_object]
         else:
             self.object_id = random.choice([0,1,2])
+            #self.object_id = random.choice([0])
         super()._reset_internal()
 
         # Reset all object positions using initializer sampler if we're not directly loading from an xml
