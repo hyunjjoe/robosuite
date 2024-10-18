@@ -66,15 +66,15 @@ def collect_human_trajectory(env, device, arm, env_configuration):
         #Failure set
         #EEF to Object
         #Gripper State
-        g2 = -1*(obs['robot0_gripper_qpos'][0])+0.003
+        #g2 = -1*(obs['robot0_gripper_qpos'][0])+0.003
         #gripper_to_object_pos_list.append(obs["robot0_eef_pos"][2])
         #print(obs["gripper_to_object_pos"])
-        g1 = np.sqrt(obs["object-state"][7]**2 + obs["object-state"][8]**2 + obs["object-state"][9]**2) - 0.12
+        #g1 = np.sqrt(obs["object-state"][7]**2 + obs["object-state"][8]**2 + obs["object-state"][9]**2) - 0.12
         #print(obs["robot0_eef_pos"])
-        g = min(g1,g2)
-        print(g)
+        #g = min(g1,g2)
+        #print(g)
         #print('robot')
-        print(obs["object-state"][-1])
+        #print(obs["object-state"][-1])
         if first==0:
             ic_list.append(obs['robot0_eef_pos'])
             print(obs["object-state"])
@@ -92,13 +92,6 @@ def collect_human_trajectory(env, device, arm, env_configuration):
         else:
             task_completion_hold_count = -1  # null the counter if there's no success
 
-    # Plot the gripper_to_object_pos data
-    # plt.plot(gripper_to_object_pos_list)
-    # plt.xlabel("Time step")
-    # plt.ylabel("Gripper to Object Position")
-    # plt.title("Gripper to Object Position Over Time")
-    # plt.savefig('gripper_to_object_pos_plot.png')
-    # cleanup for end of data collection episodes
     env.close()
 
 

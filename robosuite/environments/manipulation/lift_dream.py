@@ -183,7 +183,7 @@ class LiftDream(SingleArmEnv):
         # task settings
         #self.object_id = [0, 1, 2, 3, 4] #Bowl, Ecoforms, ACE, Pitcher, Mug
         #determine which object needs to be picked up
-        self.demo_sampling = False
+        self.demo_sampling = True
         self.target_object = "Ecoforms"
         self.object_to_id = {"Bowl": 0, "Ecoforms": 1, "ACE": 2} #, "Pitcher": 3}
         if self.demo_sampling:
@@ -441,7 +441,6 @@ class LiftDream(SingleArmEnv):
             self.object_id = self.object_to_id[self.target_object]
         else:
             self.object_id = random.choice([0,1,2])
-            #self.object_id = random.choice([0])
         super()._reset_internal()
 
         # Reset all object positions using initializer sampler if we're not directly loading from an xml
